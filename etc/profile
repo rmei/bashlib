@@ -1,0 +1,9 @@
+# User-local .profile for sh
+
+if [ "${BASH-no}" != "no" ]; then
+	[ -r ~/.bashrc ] && source ~/.bashrc
+fi
+export PATH=~/bin:"$PATH"
+
+# update PATH to include personal bin if it exists
+[ -d "$HOME/bin" ] && PATH="$HOME/bin:$PATH"

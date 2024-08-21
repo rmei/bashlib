@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# insert your own values here!
+HOR=1200
+VER=1920
+key="/apps/compiz/general/screen0/options/outputs"
+
+#switching to a single large output"
+orig_outputs=`gconftool-2 -g $key`
+gconftool-2 -s $key -t list --list-type string "[$((HOR*2))x$((VER*2))+0+0]"
+
+sleep 1
+
+#get the active window ID
+activeWinLine=$(xprop -root | egrep '^_NET_ACTIVE_WINDOW\(WINDOW\)')
+activeWinID="${activeWinLine:40}"
+
+#unmaximize the window
+wmctrl -i -r $activeWinID -b remove,maximized_horz,maximized_vert
+wmctrl -i -r $activeWinID -b remove,fullscreen
+#resize the window
+wmctrl -i -r $activeWinID -e 0,0,0,$(((HOR*2)-1)),$(((VER*2)-1))
+
+#returning to two monitor output
+gconftool-2 -s $key -t list --list-type string "$orig_outputs"

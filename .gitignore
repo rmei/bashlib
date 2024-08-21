@@ -1,0 +1,24 @@
+# Standard clutter
+._
+.DS_Store
+.*.swp
+
+# User clutter
+.project
+.sublime-project
+.classpath
+.buildpath
+.idea
+tmp.txt
+tmp*.txt
+*.tar.gz
+*~
+
+# temporary, until we're ready to track more comprehensively ...
+**/lib/perl5
+share/man
+
+# these should probably go under ~/usr/var, once its current contents move to ~/usr/mnt and ~/usr/local/var; exclude them for now.
+etc/todo
+home/*
+**/.shlib-backup

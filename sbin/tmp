@@ -1,0 +1,20 @@
+#!/bin/bash
+realhostname () 
+{ 
+    while read L; do
+        if [[ "$L" =~ [:\ ]([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+) ]]; then
+            local ip="${BASH_REMATCH[1]}";
+            if host "$ip" > /dev/null; then
+                local dns="$(host "$ip")";
+                if [[ "$dns" =~ \ ([-.[:alnum:]]+[^.])\.?$ ]]; then
+                    local myhost="${BASH_REMATCH[1]}";
+                    if [[ ! "$dns" =~ localhost ]]; then
+                        echo "$myhost";
+                        return 0;
+                    fi;
+                fi;
+            fi;
+        fi;
+    done <<<"$(ifconfig | grep '\binet\b')"
+    hostname;
+}

@@ -1,0 +1,46 @@
+[user]
+	name = Rachel Mei
+	email = rachel@mei.gs
+[github]
+	user = rmei
+	token = 
+[credential]
+	helper = cache --timeout=3600
+[core]
+    excludesfile = ~/usr/etc/gitexcludes
+[color]
+    diff = auto
+[diff]
+        tool = beyondcompare
+[difftool]
+        prompt = false
+[difftool "beyondcompare"]
+        cmd = "bcomp" "$LOCAL" "$REMOTE"
+[merge]
+        tool = beyondcompare
+[mergetool]
+        prompt = false
+[mergetool "beyondcompare"]
+        trustExitCode = false
+        cmd = "bcomp" "$LOCAL" "$REMOTE" "$BASE" "$MERGED"
+
+# Then, I use $ git difftool to compare and $ git mergetool to merge.
+#
+# About trustExitCode: For a custom merge command, specify whether the exit code of the merge command
+#  can be used to determine whether the merge was successful. If this is not set to true then the
+#  merge target file timestamp is checked and the merge assumed to have been successful if the file
+#  has been updated, otherwise the user is prompted to indicate the success of the merge.
+#
+# "bcomp" is a symlink in my shell's path; it points to /Applications/Beyond Compare.app/Contents/MacOS/bcomp
+#   which is the standard commandline entrypoint into Beyond Compare for OSX.
+[push]
+	default = simple
+	gpgsign = if-asked
+#[commit]
+#	gpgsign = true
+
+[Include]
+	path = ~/usr/arch/etc/gitconfig
+	path = ~/usr/site/etc/gitconfig
+	path = ~/usr/local/etc/gitconfig-signingkey
+	path = ~/usr/local/etc/gitconfig

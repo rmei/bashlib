@@ -1,0 +1,34 @@
+### shlib ###
+
+I want to support simple modules for bash code, with both dependency declaration and inline documentation
+
+## my requirements
+*   _simple_and_obvious__
+
+    I don't want to have to reread documentation when I think to add something. The simplest route should be the right route.
+
+*   _clean_
+
+    I don't ever want to reload code unless I explicitly request to do so.
+
+*   _lightweight_
+
+    Prefer functions; aim for zero process creation whenever possible.
+
+*   _unobtrusive_
+
+    DO NOT pollute the ALLCAPS region of the environment variable namespace.
+
+*   _portable_
+
+    It's using bash, so that's a restriction, but it should run on Darwin's bash, common Linux flavors, cygwin, etc.
+
+*   _robust_
+
+    Absence of this code should cause as little disruption as possible.
+
+*   _lucid_
+
+    Usage of this code should be easy to make clear and readable.
+
+None of the existing toolkits I can find out there have all of these, so it's roll-my-own time.

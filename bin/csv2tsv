@@ -1,0 +1,42 @@
+#!/usr/bin/perl
+
+my ($in, $out) = @ARGV;
+
+open IN, "<$in" or die qq(couldn't open "$in" for reading: $!);
+{ local $/=undef; $_=<IN>; } my $doc = $_;
+close IN;
+$doc .= "\n" unless $doc =~ /\n$/;
+
+my @table = ();
+my @line = ();
+while (length $doc) {
+    $doc =~ s/^("(?:[^"]|"")*"|[^\n",]*)(?=[,\n])//s;
+    push @line, $1;
+    if ($doc =~ s/^\n// || ! length($doc)) {
+        map {
+            s/^"((?:[^"\n\r])*)"$/$1/gs;
+            s/^(.*)$/"$1"/s if /^[^"].*[\n\r].*[^"]$/s;
+            s/\n/\r\n/gs if /^".*"$/s;
+        } @line;
+        push @table, join "\t", @line;
+        @line = ();
+    } else { $doc =~ s/^,// }
+}
+my $out = join "\r\n", @table;
+$out =~ s/^((?:\*[^\n]*\n)+)//s;
+my $header=$1;
+$header=~s/TRUE/true/g;
+$header=~s/^\*\t([^\t]+)\t([^\t]+)\t\s*$/*\t$1\t$2\r/mg;
+
+=cut
+
+,"",
+,"ab, cd",
+,"""Halo, Whirled!""",
+,"the duck said ""quack!""",
+,"the ""bun"", I might add, is tasty",
+
+m/^(("(?:[^"]|"")*"|[^,]*)(,("(?:[^"]|"")*"|[^,]*))*)$/;
+=cut
+
+print $header, "\n", $out;

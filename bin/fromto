@@ -1,0 +1,109 @@
+#!/usr/bin/perl
+use Data::Dumper;
+
+my $pattern_open = q{
+  (?: # opening operator/delimiter
+    (?:
+      (?<operator>
+        (?<match> m ) | (?<subst> s )
+      )
+      # arbitrary delimeter
+      (?: (?<paren> \( )
+        | (?<brace> \{ ) #}
+        | (?<angle> \< )
+        | (?<bracket> \[ )
+        | (?<other> [^ \( \{ \< \[ ] ) #}
+      )
+    )
+    | (?<slash> / ) # or we use the default
+  )
+};
+
+my $pattern_closing = q{
+  (?:
+    (?(<other>) \g{other} )
+    (?(<slash>) \/ )
+    (?(<paren>) \) )
+    (?(<brace>) \} )
+    (?(<angle>) \> )
+    (?(<bracket>) \] )
+  )
+};
+
+my $operand = qq{
+  # here's the regex content
+  (?: 
+    (?! $pattern_closing )
+    (?: [^ \\\\ ] | \\\\ . )
+  )*
+};
+
+my $substitution_bracket = q{
+    # opening punctuation, if paired
+    (?(<paren>) \( )
+    (?(<brace>) \{ ) #}
+    (?(<angle>) \< )
+    (?(<bracket>) \[ )
+};
+
+my $m_pattern = qr{
+  (?<expression>
+    $pattern_open
+    (?<pattern>  $operand  )
+    $pattern_closing
+    (?(<subst>)
+      $substitution_bracket
+      (?<replacement>  $operand  )
+      $pattern_closing
+    )
+    (?<modifiers> [imnsx]* )
+  )
+}xxs;
+
+sub testme() {
+  my @result = ();
+  for (@ARGV) {
+    if ( /^$m_pattern/ ) {
+      push @result, $+{pattern}
+    } else {
+      push @result, "NOPE($_)"
+    }
+    print Dumper(\%+), "\n";  
+  }
+  print join(", ", @result), "\n";
+} # testme;
+
+sub setup(\@) {
+  my ($argv) = @_;
+  my @tests = ();
+  while(@$argv and @tests < 2) {
+    my $arg = shift @$argv;
+    if ( $arg =~ /^\s*$m_pattern(?:,(?<second>\S.*\S))?\s*$/ ) {
+      my %g = %+;
+      if ( $g{match} || $g{slash} ) {
+        push @tests, sub { m%(?$g{modifiers})$g{pattern}% };
+      } else {
+        push @tests, sub { s%(?$g{modifiers})$g{pattern}%$g{replacement}% };
+      }
+      if ( $g{second} ) {
+        die "too many tests: @tests $g{second}" if @tests == 2;
+        unshift @$argv, $g{second};
+      }
+    } else {
+      print "NOPE($arg)\n";
+      last
+    }
+  }
+  return @tests;
+}
+
+# process arguments
+my ($start, $stop) = setup @ARGV;
+
+# read & filter
+my $in_window = undef;
+while (<>) {
+  $in_window = 1 if &$start;
+  print if $in_window;
+  $in_window = undef if &$stop;
+}

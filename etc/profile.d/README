@@ -1,0 +1,5 @@
+Files ending with .sh will be sourced by any shell.  If they contain commands
+specific to a given shell, those commands should be guarded by a sh-compatible
+conditional expression.
+
+Files ending with .bash will be sourced by /bin/bash.

@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+
+sub assoc(\%$$) {
+    my ($map, $k, $v) = @_;
+    $map->{$k} = {} unless defined($map->{$k});
+    $map->{$k}{$v}++;
+}
+# sudo cat /var/log/httpd/access_log
+my (%ip2agent, %ip2response, %agent2ip);
+while (<>) {
+    my ($ip,
+        $timestamp,
+        $method,
+        $uri,
+        $protocol,
+        $response,
+        $bytes_sent,
+        $unknown,
+        $agent
+        ) = /(\d+(?:\.\d+){3})\s\S\s\S\s\[(\S+ [+-]\d+)\] "([A-Z]+) (\/\S+)\s([^"]+)" (\d+) (\d+) "([^"]*)" "([^"]+)"/;
+    assoc %ip2agent, $ip, $agent;
+    assoc %agent2ip, $agent, $ip;
+    assoc %ip2response, $ip, $response;
+}
+
+print "agents with multiple homes:\n";
+for $agent (sort keys %agent2ip) {
+    my @ips = keys %{$agent2ip{$agent}};
+    next if @ips < 2;
+    print "\t$agent:\n";
+    print "\t\t$_\n" for @ips;
+}

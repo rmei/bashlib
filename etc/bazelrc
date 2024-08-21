@@ -1,0 +1,18 @@
+### Personal bazelrc ###
+
+common --watchfs
+
+build --show_timestamps
+# build --keep_going --jobs 600
+build --color=yes
+
+query --color=yes
+query --show_timestamps
+query --keep_going
+query --output label_kind
+
+# site-specific, site-wide configs
+try-import $HOME/usr/site/etc/bazelrc
+
+# workspace-specific configs
+try-import %workspace%/.bazelrc-local

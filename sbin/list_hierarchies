@@ -1,0 +1,11 @@
+#!/bin/sh
+for context in \
+    usr/local \
+    usr/site \
+    usr/arch \
+    usr \
+; do
+  echo $HOME/$context
+done
+unset context
+

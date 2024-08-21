@@ -1,0 +1,11 @@
+ #atomicparsley
+bash
+bash-completion
+findutils
+coreutils
+ #homebrew/games/frotz
+gnu-tar
+gpg2
+graphviz
+grep
+fluor

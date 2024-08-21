@@ -1,0 +1,41 @@
+# command aliases for bash
+
+# architecture-variant aliases
+source ~/usr/arch/etc/bash_aliases
+
+# ls
+alias ll='ls -l'
+alias la='ls -A'
+alias l='ls -CF'
+
+# SSH
+alias sshec2="ssh -l ubuntu -i ~/.ssh/awskey"
+
+# less
+alias lf="less +F"
+alias less="less -R"
+alias lest="less +G"
+
+# grep
+GREP_OPTS=(
+    --color=auto
+    --exclude-dir=.git
+)
+case $(uname -s) in
+ Darwin) GREPCMD=grep;;
+ Linux)  GREPCMD=grep;;
+esac
+alias grep="$GREPCMD ${GREP_OPTS[*]}"
+
+alias du='du -k'
+
+# todo
+##    alias t= todo.sh CLI
+alias to="t"
+alias todo="t"
+
+alias inittime_pwd="$PWD"
+## alias alert= set by something, don't recall what
+alias p4v='(pushd ~ ; nohup p4v & 2>/dev/null ; popd) >/dev/null 2>&1'
+#alias p4v='(pushd ~ ; nohup p4v & 2>/dev/null ; popd) >/dev/null 2>&1'
+alias history='history | less +G'       # saved Thu Dec 16 12:03:05 PST 2021

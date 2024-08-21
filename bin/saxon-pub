@@ -1,0 +1,8 @@
+#!/bin/bash
+[ -r /etc/sysconf/saxon ] && . /etc/sysconf/saxon
+[ -r ~/usr/etc/sysconf/saxon ] && . ~/usr/etc/sysconf/saxon
+[ -r ~/usr/local/etc/sysconf/saxon ] && . ~/usr/local/etc/sysconf/saxon
+[ -r ~/.saxonrc ] && . ~/.saxonrc
+
+_JAVACMD=${SAXON_JAVACMD:-${JAVA:-java}}
+${_JAVACMD} -classpath ${SAXON_HOME}/saxon9.jar:. net.sf.saxon.Transform $@

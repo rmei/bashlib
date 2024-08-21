@@ -1,0 +1,19 @@
+" vi: ts=4 sw=4 et ai si ruler
+set modeline
+set tabstop=4
+set shiftwidth=4
+set expandtab
+"set autoindent
+"set smartindent
+set ruler
+syntax enable
+if has("autocmd")
+    augroup redhat
+    "When editing a file, always jump to the last cursor position
+    autocmd BufReadPost *
+    \ if line("'\"") > 0 && line ("'\"") <= line("$") |
+    \   exe "normal! g'\"" |
+    \ endif
+    augroup END 
+endif
+

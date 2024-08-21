@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+prefix="$1"
+while read; do
+	echo "$(date -Iseconds) $prefix $REPLY"
+done
+echo "$(date -Iseconds) $prefix ::: STREAM CLOSED :::"

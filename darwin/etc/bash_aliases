@@ -1,0 +1,3 @@
+# Darwin-/OSX-specific aliases
+
+alias ls='ls -G'

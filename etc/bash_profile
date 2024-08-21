@@ -1,0 +1,170 @@
+
+if [ "$SOURCING_BASHRC" ]; then return; fi
+export SOURCING_BASHRC=true
+
+# source /Users/rachel/.bootstrap_rc
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# Gnome Terminal on Ubuntu only sources .bashrc; fix this
+unset sourced
+for f in "${BASH_SOURCE[@]}"; do
+    if [[ "$f" =~ bash_profile ]]; then
+        sourced=1
+    fi
+done
+if [[ -z "$sourced" ]]; then
+    source ~/.bash_profile
+fi
+unset sourced f
+
+# function to avoid adding duplicate entries to the PATH
+function pathmunge () {
+    case ":${PATH}:" in
+        *:"$1":*) ;;
+        *)
+            if [ "${2,,}" = "after" ] ; then
+                PATH="$PATH:$1"
+            else
+                PATH="$1:$PATH"
+            fi
+    esac
+}
+
+export force_color_prompt=yes
+
+# do all subtrees' config bundles in reverse-priority order
+for f in ~/usr{/{arch,site,local},} ; do
+    if [[ -d $f/etc/bashrc.d ]]; then
+        for fragment in $f/etc/bashrc.d/*; do
+            if [[ -r $fragment ]]; then
+                . $fragment
+            fi
+        done ; unset fragment
+    fi
+done ; unset f
+
+export P4CONFIG=.p4config
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=2000
+HISTFILESIZE=10000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -r ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+if [ -r ~/.bash_fns ]; then
+    . ~/.bash_fns
+fi
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+    source /etc/bash_completion
+fi
+
+export PS4="\[\033[01;32m\] >>> \[\033[00m\] "
+export CLICOLOR=
+
+export DIFF=bcdiff
+export PATH
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH${DYLD_LIBRARY_PATH:+:}$HOME/usr/local/libexec
+
+export GREP_OPTS=--exclude-dir=.git
+
+#declare -Ax WORKSPACES=( [wk]=~/wk [alt]=~/wk-alt [alt2]=~/wk-alt2 )
+
+export FUNCTION_FILE=~/usr/local/share/shlib/saved_functions.bash
+
+#[[ `uname` == "Darwin" ]] ||
+#    source `shlib cb` usep4
+#source `shlib mymacros`
+#source `shlib archive`
+#source `shlib saved_functions`
+
+export SHLIB=~/usr/share/shlib/shlib.bash
+for f in \
+    $SHLIB \
+    ~/usr/site/share/shlib/sitemacros.bash \
+    ~/usr/share/shlib/archive.bash \
+    ~/usr/local/share/shlib/saved_functions.bash \
+; do source $f ; done
+
+# other completions
+
+if [[ -f $HOME/usr/etc/bashrc.d/todo_completion && -x $HOME/usr/bin/t ]]; then
+    complete -F _todo t
+fi
+
+export TODOTXT_CFG_FILE=~/usr/etc/todo.cfg
+# default to "ls"
+export TODOTXT_DEFAULT_ACTION="ls"
+
+#source $HOME/Documents/git/commandline-tools/share/shlib/p4tools.bash
+
+# source $HOME/Documents/git/commandline-tools/share/shlib/utilities.bash
+
+#fi # [[ -n "$PS1" ]]
+
+# [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+
+# PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+
+# Do we really want to do this?
+for p in "$HOME"/usr/{arch,site,local}/etc/profile; do
+    [[ -s "$p" ]] && source "$p"
+done
+
+alias ll="ls -l"
+alias setenv="set | grep -Pe '^\S+='"
+
+eval "$(perl -I$HOME/usr/lib/perl5 -Mlocal::lib=$HOME/usr)"
+eval "$(perl -Mlocal::lib::Eyrie)"
+
+# finally do subtree's bashrcs (so they can override if desired)
+for f in ~/usr/{arch,site,local} ; do
+    if [[ -r $f/etc/bashrc ]] ; then source $f/etc/bashrc ; fi
+done
+
+unset SOURCING_BASHRC
